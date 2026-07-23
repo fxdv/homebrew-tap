@@ -1,0 +1,56 @@
+name: Sync Patchlog
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-and-test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Download latest stable formula
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          latest_tag="$(gh api repos/fxdv/patchlog/releases/latest --jq .tag_name)"
+          if [[ ! "${latest_tag}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "latest Patchlog release is not stable: ${latest_tag}" >&2
+            exit 1
+          fi
+          gh release download "${latest_tag}" \
+            --repo fxdv/patchlog \
+            --pattern patchlog.rb \
+            --dir "${RUNNER_TEMP}"
+          mkdir -p Formula
+          cp "${RUNNER_TEMP}/patchlog.rb" Formula/patchlog.rb
+      - name: Validate formula syntax and style
+        run: |
+          set -euo pipefail
+          ruby -c Formula/patchlog.rb
+          brew style Formula/patchlog.rb
+      - name: Install and test published formula
+        run: |
+          set -euo pipefail
+          brew install --formula ./Formula/patchlog.rb
+          expected_version="$(ruby -ne 'puts $1 if $_ =~ /version "([^"]+)"/' Formula/patchlog.rb)"
+          test "$(patchlog --version)" = "patchlog v${expected_version}"
+          brew test patchlog
+      - name: Publish formula update
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- Formula/patchlog.rb; then
+            echo "Formula already matches the latest stable release."
+            exit 0
+          fi
+          version="$(ruby -ne 'puts $1 if $_ =~ /version "([^"]+)"/' Formula/patchlog.rb)"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add Formula/patchlog.rb
+          git commit -m "patchlog ${version}"
+          git push
