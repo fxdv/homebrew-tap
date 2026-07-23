@@ -28,7 +28,11 @@ jobs:
             --pattern patchlog.rb \
             --dir "${RUNNER_TEMP}"
           mkdir -p Formula
-          cp "${RUNNER_TEMP}/patchlog.rb" Formula/patchlog.rb
+          candidate_version="$(ruby -ne 'puts $1 if $_ =~ /version "([^"]+)"/' "${RUNNER_TEMP}/patchlog.rb")"
+          current_version="$(ruby -ne 'puts $1 if $_ =~ /version "([^"]+)"/' Formula/patchlog.rb 2>/dev/null || true)"
+          if [ "${candidate_version}" != "${current_version}" ]; then
+            cp "${RUNNER_TEMP}/patchlog.rb" Formula/patchlog.rb
+          fi
       - name: Validate formula syntax and style
         run: |
           set -euo pipefail

@@ -25,7 +25,7 @@ class Patchlog < Formula
   end
 
   def install
-    bin.install Dir["patchlog_*/patchlog"].first => "patchlog"
+    bin.install "patchlog"
   end
 
   test do
