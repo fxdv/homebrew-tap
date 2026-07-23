@@ -37,10 +37,13 @@ jobs:
       - name: Install and test published formula
         run: |
           set -euo pipefail
-          brew install --formula ./Formula/patchlog.rb
+          brew tap fxdv/tap
+          tap_dir="$(brew --repo fxdv/tap)"
+          cp Formula/patchlog.rb "${tap_dir}/Formula/patchlog.rb"
+          brew install fxdv/tap/patchlog
           expected_version="$(ruby -ne 'puts $1 if $_ =~ /version "([^"]+)"/' Formula/patchlog.rb)"
           test "$(patchlog --version)" = "patchlog v${expected_version}"
-          brew test patchlog
+          brew test fxdv/tap/patchlog
       - name: Publish formula update
         run: |
           set -euo pipefail
