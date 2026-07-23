@@ -1,30 +1,31 @@
 class Patchlog < Formula
   desc "Safely coordinate release notes, version bumps, tags, and pushes"
   homepage "https://github.com/fxdv/patchlog"
-  version "0.1.3"
+  version "0.1.4"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/fxdv/patchlog/releases/download/v0.1.3/patchlog_v0.1.3_darwin_arm64.tar.gz"
-      sha256 "4200d54cae6891f5d994704b11e621064ba5af7b98cd0615f4af3b66f537a2d3"
+      url "https://github.com/fxdv/patchlog/releases/download/v0.1.4/patchlog_v0.1.4_darwin_arm64.tar.gz"
+      sha256 "b050a80e5a14e2abf41e2a99dad1844b573c3c51b834acdbd9f9e69291a9044a"
     else
-      url "https://github.com/fxdv/patchlog/releases/download/v0.1.3/patchlog_v0.1.3_darwin_amd64.tar.gz"
-      sha256 "90b6602e7cfd224b4af6ed6765993527d12c943b70f2e2ac8cf62b46479574a8"
+      url "https://github.com/fxdv/patchlog/releases/download/v0.1.4/patchlog_v0.1.4_darwin_amd64.tar.gz"
+      sha256 "3bd235d1aacdb6355c4900d6606b6a128b7fc9960a015f8b1d70de014d0cc28b"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/fxdv/patchlog/releases/download/v0.1.3/patchlog_v0.1.3_linux_arm64.tar.gz"
-      sha256 "be8e53282643ae348dd773379743496a0b652c50190801c87eca673b01b53ae9"
+      url "https://github.com/fxdv/patchlog/releases/download/v0.1.4/patchlog_v0.1.4_linux_arm64.tar.gz"
+      sha256 "481c8c0340d3de80377a2f3d66b740aaf60ca6a5cb7bd5f974a29d946d370604"
     else
-      url "https://github.com/fxdv/patchlog/releases/download/v0.1.3/patchlog_v0.1.3_linux_amd64.tar.gz"
-      sha256 "50b3373a6d02db70d1d6e284366a37b5c1efe6f7959065a343064a1e98d1c9b4"
+      url "https://github.com/fxdv/patchlog/releases/download/v0.1.4/patchlog_v0.1.4_linux_amd64.tar.gz"
+      sha256 "0a286b5b8210a9d5ef10e77e94d719e7adb0b643fedb8502f8ebb309fefc5109"
     end
   end
 
   def install
+    # Homebrew strips the archive's single top-level directory before install.
     bin.install "patchlog"
   end
 
